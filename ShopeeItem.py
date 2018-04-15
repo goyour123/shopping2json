@@ -1,4 +1,5 @@
 import re
+import json
 import requests
 
 def get_shopid_by_username(username):
@@ -56,17 +57,35 @@ def get_params(url):
 headers = {
     'Host': 'shopee.tw',
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:59.0) Gecko/20100101 Firefox/59.0',
-    'if-none-match-': '*',
+    'Accept': '*/*',
+    'Accept-Language': 'zh-TW,zh;q=0.8,en-US;q=0.5,en;q=0.3',
+    'Accept-Encoding': 'gzip, deflate, br',
+    # 'Referer': 'https://shopee.tw/%E5%9C%93%E7%9B%A4%E5%BC%8F%E8%AA%BF%E5%85%89%E5%99%A8%E5%BB%B6%E9%95%B7%E7%B7%9A-3M-i.26128781.737121539',
+    'x-requested-with': 'XMLHttpRequest',
+    'x-api-source': 'pc',
+    'if-none-match-': '55b03-4e8849c5ab0a16b18a1cc1950c2c3d1d',
+    'origin': 'https://shopee.tw',
+    'Cookie': '_ga=GA1.2.1573711670.1520060862; _gac_UA-61915057-6=1.1520060869.Cj0KCQiAieTUBRCaARIsAHeLDCQYvSYw9HxGkx3kRaqahivcK8I4ozGM4Q41q4f7VVF0TJzp33GrnzsaAi-IEALw_wcB; cto_lwid=b831de58-2022-41e2-b78f-57884eed5b6c; SPC_IA=-1; SPC_EC=-; SPC_F=YzMNdR2qIQPVRP8UumDaMul4bCiHjKyO; REC_T_ID=908b8540-1eb1-11e8-a08e-c81f66de8516; SPC_T_ID="+l9S+x9IzIWFj7SAeqHU+eJ/s71Q//t1bVymAOcbBzwJX22rLBQNw6RfIYu+cbpI5Wcw4XRaQsHVdPbO2MiEgqPmfFDFI2P/I06OoX9OQvY="; SPC_U=-; SPC_T_IV="LbM8UNFvfR95ohEwb0taaA=="; __BWfp=c1520060864864x8aa629cb3; SPC_SI=yqupjdgkese4ge81qbge2174rzvb1fjq; _gid=GA1.2.155357059.1523712914; csrftoken=gyC0jkgbzv9Uhi3KOYvVe4qv2w5iov8h; SPC_SC_TK=; UYOMAPJWEMDGJ=; SPC_SC_UD=; _gat=1',
+    'Connection': 'keep-alive'
 }
 
-PRODUCT_SHORTER = 'https://shopee.tw/goyour123/737121539/'
+PRODUCT_SHORTER = 'https://shopee.tw/goyour123/1072932847/'
 PRODUCT_URL = 'https://shopee.tw/product/26128781/393544259/'
 
 ITEM_DETAIL_API_URL = 'https://shopee.tw/api/v1/item_detail/'
 
 res = requests.get(ITEM_DETAIL_API_URL, params=get_params(PRODUCT_SHORTER), headers=headers)
-json = res.json()
+res_json = res.json()
 
 print('HTTP Status Code: ' + str(res.status_code))
-print (json['name'])
-print (json['price'])
+
+item_dict = {
+    'Name': res_json['name'],
+    'Price': int(res_json['price'])
+}
+
+item_json = json.JSONEncoder().encode(item_dict)
+
+with open('item.json', 'w') as file_json:
+    file_json.write(item_json)
+
